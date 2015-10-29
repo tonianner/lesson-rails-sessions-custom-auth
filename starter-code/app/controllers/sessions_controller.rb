@@ -6,11 +6,16 @@ class SessionsController < ApplicationController
 
  def create
   user = User.find_by_email(params[:email])
-  if user && user.authenticate(params[:password])
-   redirect_to root_path, notice: "logged in!"
+  if user.nil?
+    redirect_to new_user_path
   else
-   flash.now.alert = "invalid login credentials"
-   render "new"
+    if user && user.authenticate(params[:password])
+     session[:user_id] = user.id
+     redirect_to root_path, notice: "logged in!"
+    else
+     flash.now.alert = "invalid login credentials"
+     render "new"
+    end
   end
  end
 
@@ -20,3 +25,5 @@ class SessionsController < ApplicationController
  end
 
 end
+
+
